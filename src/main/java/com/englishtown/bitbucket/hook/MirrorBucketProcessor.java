@@ -83,8 +83,8 @@ public class MirrorBucketProcessor implements BucketProcessor<MirrorRequest> {
     private void runMirrorCommand(MirrorSettings settings, Repository repository) {
         log.debug("{}: Preparing to push changes to mirror", repository);
 
-        String password = passwordEncryptor.decrypt(settings.password);
-        String authenticatedUrl = getAuthenticatedUrl(settings.mirrorRepoUrl, settings.username, password);
+        String unencryptedPassword = passwordEncryptor.decrypt(settings.password);
+        String authenticatedUrl = getAuthenticatedUrl(settings.mirrorRepoUrl, settings.username, unencryptedPassword);
 
         // Call push command with the prune flag and refspecs for heads and tags
         // Do not use the mirror flag as pull-request refs are included
@@ -116,7 +116,7 @@ public class MirrorBucketProcessor implements BucketProcessor<MirrorRequest> {
             builder.argument("+refs/notes/*:refs/notes/*");
         }
 
-        PasswordHandler passwordHandler = new PasswordHandler(settings.password,
+        PasswordHandler passwordHandler = new PasswordHandler(unencryptedPassword,
                 new GitCommandExitHandler(i18nService, repository));
 
         Command<String> command = builder.errorHandler(passwordHandler)
