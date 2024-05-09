@@ -1,7 +1,9 @@
 package com.englishtown.bitbucket.hook;
 
+import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
@@ -13,6 +15,7 @@ import java.util.Base64;
 /**
  * Service to encrypt/decrypt git user passwords
  */
+@Component
 public class DefaultPasswordEncryptor implements PasswordEncryptor {
 
     private SecretKey secretKey;
@@ -21,7 +24,7 @@ public class DefaultPasswordEncryptor implements PasswordEncryptor {
     static final String ENCRYPTED_PREFIX = "encrypted:";
     static final String SETTINGS_CRYPTO_KEY = "crypto.key";
 
-    public DefaultPasswordEncryptor(PluginSettingsFactory settingsFactory) {
+    public DefaultPasswordEncryptor(@ComponentImport PluginSettingsFactory settingsFactory) {
         PluginSettings pluginSettings = settingsFactory.createSettingsForKey(PLUGIN_SETTINGS_KEY);
 
         try {

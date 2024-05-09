@@ -32,6 +32,7 @@
         <bitbucket.version>8.19.2</bitbucket.version>
         <bitbucket.test.version>${bitbucket.version}</bitbucket.test.version>
         <amps.version>8.9.2</amps.version>
+        <atlassian.spring.scanner.version>2.2.0</atlassian.spring.scanner.version>
     </properties>
 
     <dependencyManagement>
@@ -90,6 +91,18 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.atlassian.plugin</groupId>
+            <artifactId>atlassian-spring-scanner-annotation</artifactId>
+            <version>${atlassian.spring.scanner.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -108,6 +121,23 @@
                             <dataVersion>${bitbucket.test.version}</dataVersion>
                         </product>
                     </products>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.atlassian.plugin</groupId>
+                <artifactId>atlassian-spring-scanner-maven-plugin</artifactId>
+                <version>${atlassian.spring.scanner.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>atlassian-spring-scanner</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- Enable this to get build-time logging of annotations atlassian-spring-scanner-maven-plugin has noticed -->
+                    <verbose>false</verbose>
                 </configuration>
             </plugin>
         </plugins>
