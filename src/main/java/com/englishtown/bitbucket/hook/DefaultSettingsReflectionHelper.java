@@ -4,10 +4,12 @@ import com.atlassian.bitbucket.setting.Settings;
 
 import java.lang.reflect.Field;
 import java.util.Map;
+import org.springframework.stereotype.Component;
 
 /**
  * Default implementation of {@link SettingsReflectionHelper}
  */
+@Component
 public class DefaultSettingsReflectionHelper implements SettingsReflectionHelper {
 
     /**

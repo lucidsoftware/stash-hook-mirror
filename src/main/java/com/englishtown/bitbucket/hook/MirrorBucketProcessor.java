@@ -11,9 +11,11 @@ import com.atlassian.bitbucket.scm.ScmService;
 import com.atlassian.bitbucket.scm.git.command.GitCommandExitHandler;
 import com.atlassian.bitbucket.server.ApplicationPropertiesService;
 import com.atlassian.bitbucket.user.SecurityService;
+import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import java.net.URI;
@@ -24,6 +26,7 @@ import java.util.Locale;
 
 import static com.englishtown.bitbucket.hook.MirrorRepositoryHook.PROP_PREFIX;
 
+@Component
 public class MirrorBucketProcessor implements BucketProcessor<MirrorRequest> {
 
     static final String PROP_TIMEOUT = PROP_PREFIX + "timeout";
@@ -39,9 +42,9 @@ public class MirrorBucketProcessor implements BucketProcessor<MirrorRequest> {
     private final SecurityService securityService;
     private final Duration timeout;
 
-    public MirrorBucketProcessor(I18nService i18nService, PasswordEncryptor passwordEncryptor,
-                                 ApplicationPropertiesService propertiesService, RepositoryService repositoryService,
-                                 ScmService scmService, SecurityService securityService) {
+    public MirrorBucketProcessor(@ComponentImport I18nService i18nService, PasswordEncryptor passwordEncryptor,
+                                 @ComponentImport ApplicationPropertiesService propertiesService, @ComponentImport RepositoryService repositoryService,
+                                 @ComponentImport ScmService scmService, SecurityService securityService) {
         this.i18nService = i18nService;
         this.passwordEncryptor = passwordEncryptor;
         this.repositoryService = repositoryService;
@@ -83,8 +86,8 @@ public class MirrorBucketProcessor implements BucketProcessor<MirrorRequest> {
     private void runMirrorCommand(MirrorSettings settings, Repository repository) {
         log.debug("{}: Preparing to push changes to mirror", repository);
 
-        String password = passwordEncryptor.decrypt(settings.password);
-        String authenticatedUrl = getAuthenticatedUrl(settings.mirrorRepoUrl, settings.username, password);
+        String unencryptedPassword = passwordEncryptor.decrypt(settings.password);
+        String authenticatedUrl = getAuthenticatedUrl(settings.mirrorRepoUrl, settings.username, unencryptedPassword);
 
         // Call push command with the prune flag and refspecs for heads and tags
         // Do not use the mirror flag as pull-request refs are included
@@ -116,7 +119,7 @@ public class MirrorBucketProcessor implements BucketProcessor<MirrorRequest> {
             builder.argument("+refs/notes/*:refs/notes/*");
         }
 
-        PasswordHandler passwordHandler = new PasswordHandler(settings.password,
+        PasswordHandler passwordHandler = new PasswordHandler(unencryptedPassword,
                 new GitCommandExitHandler(i18nService, repository));
 
         Command<String> command = builder.errorHandler(passwordHandler)
