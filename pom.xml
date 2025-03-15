@@ -4,7 +4,7 @@
 
     <groupId>com.englishtown</groupId>
     <artifactId>stash-hook-mirror</artifactId>
-    <version>3.3.1</version>
+    <version>2025-03-14</version>
 
     <organization>
         <name>EF Learning Labs</name>
@@ -26,12 +26,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
 
-        <bitbucket.version>8.19.2</bitbucket.version>
+        <bitbucket.version>9.4.3</bitbucket.version>
         <bitbucket.test.version>${bitbucket.version}</bitbucket.test.version>
-        <amps.version>8.9.2</amps.version>
+        <amps.version>9.1.1</amps.version>
         <atlassian.spring.scanner.version>2.2.0</atlassian.spring.scanner.version>
     </properties>
 
@@ -103,6 +103,12 @@
             <artifactId>spring-context</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.4.0-jre</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -113,6 +119,15 @@
                 <version>${amps.version}</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <banningExcludes>
+                        <!-- Bitbucket bans these but then doesn't actually provide any of them... -->
+                        <exclude>com.google.code.gson:gson</exclude>
+                        <exclude>com.google.code.findbugs:jsr305</exclude>
+                        <exclude>com.google.guava:guava</exclude>
+                        <exclude>commons-lang:commons-lang</exclude>
+                        <exclude>commons-io:commons-io</exclude>
+                        <exclude>commons-collections:commons-collections</exclude>
+                    </banningExcludes>
                     <products>
                         <product>
                             <id>bitbucket</id>
